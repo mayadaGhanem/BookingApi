@@ -1,2 +1,2 @@
 # BookingApi
-booking using GraphQl , reactjs and nodejs
+booking using GraphQl and nodejs
