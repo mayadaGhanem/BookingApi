@@ -1,0 +1,29 @@
+{
+  "name": "booking",
+  "version": "1.0.0",
+  "description": "booking is a project uses Graphql and nodejs ",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mayadaGhanem/BookingApi.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mayadaGhanem/BookingApi/issues"
+  },
+  "homepage": "https://github.com/mayadaGhanem/BookingApi#readme",
+  "devDependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "nodemon": "^2.0.13"
+  },
+  "dependencies": {
+    "express-graphql": "^0.12.0",
+    "graphql": "^15.6.0"
+  }
+}
