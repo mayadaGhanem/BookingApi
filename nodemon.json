@@ -1,7 +1,0 @@
-{
-  "env": {
-    "MONGO_USER": "mayada",
-    "MONGO_PASSWORD": "booking2021",
-    "DATABASE_NAME": "bookings"
-  }
-}
