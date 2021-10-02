@@ -1,5 +1,6 @@
 const Event = require("../..//models/events");
 const User = require("../..//models/user");
+const Booking = require("../../models/booking");
 const bcrypt = require("bcryptjs");
 const user = async (userId) => {
   try {
@@ -14,12 +15,24 @@ const user = async (userId) => {
 };
 const event = async (eventIds) => {
   try {
-    const events = await Event.find({ createdEvents: { $in: eventIds } });
+    const events = await Event.find({ _id: { $in: eventIds } });
     return events.map((event) => ({
       ...event._doc,
       creator: user.bind(this, event._doc.creator),
       date: new Date(event._doc.date).toISOString(),
     }));
+  } catch (e) {
+    console.log(e);
+  }
+};
+const singleEvent = async (eventId) => {
+  try {
+    const event = await Event.findById(eventId);
+    return {
+      ...event._doc,
+      creator: user.bind(this, event._doc.creator),
+      date: new Date(event._doc.date).toISOString(),
+    };
   } catch (e) {
     console.log(e);
   }
@@ -40,6 +53,20 @@ const resolvers = {
     try {
       const res = await User.find({});
       return res.map((user) => ({ ...user._doc }));
+    } catch (e) {
+      console.log(e);
+    }
+  },
+  bookings: async () => {
+    try {
+      const res = await Booking.find({});
+      return res.map((booking) => ({
+        ...booking._doc,
+        user: user.bind(this, booking._doc.user),
+        event: singleEvent.bind(this, booking._doc.event),
+        createdAt: new Date(booking._doc.createdAt).toISOString(),
+        updatedAt: new Date(booking._doc.updatedAt).toISOString(),
+      }));
     } catch (e) {
       console.log(e);
     }
@@ -89,6 +116,49 @@ const resolvers = {
         password: null,
         createdEvents: event.bind(this, newUser._doc.createdEvents),
       };
+    } catch (e) {
+      console.log(e);
+    }
+  },
+  bookEvent: async (args) => {
+    try {
+      const { eventId } = args;
+      const eventExist = await Event.findOne({ _id: eventId });
+      if (!eventExist) {
+        throw new Error("The Event not Exists!");
+      }
+      const booking = new Booking({
+        user: "614f9083993de1fcc6c0e319",
+        event: eventId,
+      });
+      const newBooking = await booking.save();
+      return {
+        ...newBooking._doc,
+        user: user.bind(this, newBooking._doc.user),
+        event: singleEvent.bind(this, newBooking._doc.event),
+        createdAt: new Date(newBooking._doc.createdAt).toISOString(),
+        updatedAt: new Date(newBooking._doc.updatedAt).toISOString(),
+      };
+    } catch (e) {
+      console.log(e);
+    }
+  },
+  cancelBooking: async (args) => {
+    try {
+      const { bookingId } = args;
+      const bookingExist = await Booking.findOne({ _id: bookingId }).populate(
+        "event"
+      );
+      if (!bookingExist) {
+        throw new Error("The Booking not Exists!");
+      }
+      const event = {
+        ...bookingExist._doc.event,
+        creator: user.bind(this, bookingExist._doc.event.creator),
+        date: new Date(bookingExist._doc.event.date).toISOString(),
+      };
+      await Booking.deleteOne({ _id: bookingId });
+      return event;
     } catch (e) {
       console.log(e);
     }
