@@ -1,4 +1,3 @@
-const mongoose = require("mongoose");
 const Event = require("../..//models/events");
 const User = require("../..//models/user");
 const bcrypt = require("bcryptjs");
