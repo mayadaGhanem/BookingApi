@@ -64,8 +64,8 @@ const resolvers = {
         ...booking._doc,
         user: user.bind(this, booking._doc.user),
         event: singleEvent.bind(this, booking._doc.event),
-        createdAt: new Date(booking._doc.createdAt),
-        updatedAt: new Date(booking._doc.updatedAt),
+        createdAt: new Date(booking._doc.createdAt).toISOString(),
+        updatedAt: new Date(booking._doc.updatedAt).toISOString(),
       }));
     } catch (e) {
       console.log(e);
@@ -136,9 +136,29 @@ const resolvers = {
         ...newBooking._doc,
         user: user.bind(this, newBooking._doc.user),
         event: singleEvent.bind(this, newBooking._doc.event),
-        createdAt: new Date(newBooking._doc.createdAt),
-        updatedAt: new Date(newBooking._doc.updatedAt),
+        createdAt: new Date(newBooking._doc.createdAt).toISOString(),
+        updatedAt: new Date(newBooking._doc.updatedAt).toISOString(),
       };
+    } catch (e) {
+      console.log(e);
+    }
+  },
+  cancelBooking: async (args) => {
+    try {
+      const { bookingId } = args;
+      const bookingExist = await Booking.findOne({ _id: bookingId }).populate(
+        "event"
+      );
+      if (!bookingExist) {
+        throw new Error("The Booking not Exists!");
+      }
+      const event = {
+        ...bookingExist._doc.event,
+        creator: user.bind(this, bookingExist._doc.event.creator),
+        date: new Date(bookingExist._doc.event.date).toISOString(),
+      };
+      await Booking.deleteOne({ _id: bookingId });
+      return event;
     } catch (e) {
       console.log(e);
     }
