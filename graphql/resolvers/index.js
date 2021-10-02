@@ -1,5 +1,6 @@
 const Event = require("../..//models/events");
 const User = require("../..//models/user");
+const Booking = require("../../models/booking");
 const bcrypt = require("bcryptjs");
 const user = async (userId) => {
   try {
@@ -52,6 +53,20 @@ const resolvers = {
     try {
       const res = await User.find({});
       return res.map((user) => ({ ...user._doc }));
+    } catch (e) {
+      console.log(e);
+    }
+  },
+  bookings: async () => {
+    try {
+      const res = await Booking.find({});
+      return res.map((booking) => ({
+        ...booking._doc,
+        user: user.bind(this, booking._doc.user),
+        event: singleEvent.bind(this, booking._doc.event),
+        createdAt: new Date(booking._doc.createdAt),
+        updatedAt: new Date(booking._doc.updatedAt),
+      }));
     } catch (e) {
       console.log(e);
     }
