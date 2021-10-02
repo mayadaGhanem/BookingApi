@@ -120,5 +120,28 @@ const resolvers = {
       console.log(e);
     }
   },
+  bookEvent: async (args) => {
+    try {
+      const { eventId } = args;
+      const eventExist = await Event.findOne({ _id: eventId });
+      if (!eventExist) {
+        throw new Error("The Event not Exists!");
+      }
+      const booking = new Booking({
+        user: "614f9083993de1fcc6c0e319",
+        event: eventId,
+      });
+      const newBooking = await booking.save();
+      return {
+        ...newBooking._doc,
+        user: user.bind(this, newBooking._doc.user),
+        event: singleEvent.bind(this, newBooking._doc.event),
+        createdAt: new Date(newBooking._doc.createdAt),
+        updatedAt: new Date(newBooking._doc.updatedAt),
+      };
+    } catch (e) {
+      console.log(e);
+    }
+  },
 };
 module.exports = resolvers;
