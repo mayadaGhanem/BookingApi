@@ -14,12 +14,24 @@ const user = async (userId) => {
 };
 const event = async (eventIds) => {
   try {
-    const events = await Event.find({ createdEvents: { $in: eventIds } });
+    const events = await Event.find({ _id: { $in: eventIds } });
     return events.map((event) => ({
       ...event._doc,
       creator: user.bind(this, event._doc.creator),
       date: new Date(event._doc.date).toISOString(),
     }));
+  } catch (e) {
+    console.log(e);
+  }
+};
+const singleEvent = async (eventId) => {
+  try {
+    const event = await Event.findById(eventId);
+    return {
+      ...event._doc,
+      creator: user.bind(this, event._doc.creator),
+      date: new Date(event._doc.date).toISOString(),
+    };
   } catch (e) {
     console.log(e);
   }
