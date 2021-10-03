@@ -3,8 +3,11 @@ const Booking = require("../../models/booking");
 const { transformBooking, transformEvent } = require("./resolverHelper");
 
 module.exports = {
-  bookings: async () => {
+  bookings: async (args, req) => {
     try {
+      if (!req.isAuth) {
+        throw new Error("You're Not Authorized to perform this action ");
+      }
       const res = await Booking.find({});
       return res.map((booking) => transformBooking(booking));
     } catch (e) {
@@ -12,15 +15,18 @@ module.exports = {
       throw e;
     }
   },
-  bookEvent: async (args) => {
+  bookEvent: async (args, req) => {
     try {
+      if (!req.isAuth) {
+        throw new Error("You're Not Authorized to perform this action ");
+      }
       const { eventId } = args;
       const eventExist = await Event.findOne({ _id: eventId });
       if (!eventExist) {
         throw new Error("The Event not Exists!");
       }
       const booking = new Booking({
-        user: "614f9083993de1fcc6c0e319",
+        user: req.userId,
         event: eventId,
       });
       const newBooking = await booking.save();
@@ -30,7 +36,10 @@ module.exports = {
       throw e;
     }
   },
-  cancelBooking: async (args) => {
+  cancelBooking: async (args, req) => {
+    if (!req.isAuth) {
+      throw new Error("You're Not Authorized to perform this action ");
+    }
     try {
       const { bookingId } = args;
       const bookingExist = await Booking.findOne({ _id: bookingId }).populate(

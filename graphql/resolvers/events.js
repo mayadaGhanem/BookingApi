@@ -12,19 +12,22 @@ module.exports = {
       throw e;
     }
   },
-  createEvent: async (args) => {
+  createEvent: async (args, req) => {
     try {
+      if (!req.isAuth) {
+        throw new Error("You're Not Authorized to perform this action ");
+      }
       let createdEvent;
       let event = new Event({
         title: args.eventInput.title,
         description: args.eventInput.description,
         price: +args.eventInput.price,
         date: new Date(args.eventInput.date),
-        creator: "614f9083993de1fcc6c0e319",
+        creator: req.userId,
       });
       const newEvent = await event.save();
       createdEvent = transformEvent(newEvent);
-      const userExist = await User.findById("614f9083993de1fcc6c0e319");
+      const userExist = await User.findById(req.userId);
       if (!userExist) {
         throw new Error("The User Not Found");
       }
