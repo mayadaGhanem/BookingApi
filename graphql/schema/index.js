@@ -22,6 +22,11 @@ type User {
   password:String
   createdEvents:[Event!]
 }
+type AuthResponse {
+  userId: ID!
+  token:String!
+  tokenExpiration: Int!
+}
 input EventInput {
   title:String!
   description: String!
@@ -37,10 +42,11 @@ type RootQuery {
   events:[Event!]!
   users:[User!]!
   bookings: [Booking!]!
+  login(email:String!,password:String!):AuthResponse!
 }
 type RootMutation{
-  createEvent(eventInput:EventInput):Event!
-  createUser(userInput:UserInput):User!
+  createEvent(eventInput:EventInput):Event
+  createUser(userInput:UserInput):User
   bookEvent(eventId:ID!):Booking!
   cancelBooking(bookingId:ID!):Event!
 }
